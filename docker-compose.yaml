@@ -11,13 +11,19 @@ services:
       - db_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: pg_isready -U myuser -d mydatabase
+      interval: 5s
+      retries: 5
 
   api:
     build: .
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgres://myuser:mypassword@db:5432/mydatabase
+      JWT_SECRET: sample_jwt
     ports:
       - "3000:3000"
 

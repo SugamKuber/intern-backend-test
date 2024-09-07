@@ -7,6 +7,5 @@ export async function createBookInDb(title: string, author: string): Promise<Boo
   const id = randomUUID();
 
   const result = await pool.query<Book>('INSERT INTO books (id, title, author) VALUES ($1, $2, $3) RETURNING id, title, author', [id, title, author]);
-
   return result.rows[0];
 }

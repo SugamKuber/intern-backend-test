@@ -23,7 +23,7 @@ async function createTables(pool: Pool) {
 
     CREATE TABLE IF NOT EXISTS books (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      title TEXT NOT NULL CHECK (LENGTH(title) BETWEEN 10 AND 200),
+      title TEXT NOT NULL UNIQUE CHECK (LENGTH(title) BETWEEN 10 AND 200),
       author TEXT NOT NULL CHECK (LENGTH(author) BETWEEN 10 AND 80)
     );
 

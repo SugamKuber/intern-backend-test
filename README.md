@@ -61,3 +61,14 @@ Here we are evaluating your capacity to understand what should be tested and how
 - We expect you to handle errors and edge cases. Understanding what these are and how to handle them is part of the challenge.
 - Feel free to change literally anything about this project. We already provided you a sample to run an API and a Postgres database on Docker and gave you samples for interacting with the database. All that we require is that if you do change something, you should explain why you did it and provide us with the necessary instructions to run the project.
 - The API paths above are just suggestions, so feel free to change them as well - although if you do change them, we expect that it still covers all the necessary operations we describred.
+
+# Guide to usage [EDIT]
+1. Import the postman collection file
+2. "bun start" or "bun run run-docker"
+3. Test the API's from postman
+4. "bun run test" for running the tests cases (19 cases)
+(make sure the database is working)
+
+### Improvements
+1. Test cases handling
+2. More types in required places

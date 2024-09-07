@@ -3,6 +3,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import { createUserInDb, getUserByUsername, attachBookToUserInDb } from '../../dal/user';
 import type { CreateUserBody, AuthenticateUserBody, AttachBookParams } from '../schemas/user';
 import type { User, JWTPayload } from '../../types';
+import { DatabaseError } from 'pg';
 
 export async function createUser(request: FastifyRequest<{ Body: CreateUserBody }>, reply: FastifyReply) {
   const { username, password } = request.body;
@@ -10,9 +11,13 @@ export async function createUser(request: FastifyRequest<{ Body: CreateUserBody 
   try {
     const user = await createUserInDb(username, hashedPassword);
     reply.code(201).send(user);
-  } catch (error: any) {
-    if (error.constraint === 'users_username_key') {
-      reply.code(409).send({ error: 'Username already exists' });
+  } catch (error) {
+    if (error instanceof DatabaseError) {
+      if (error.constraint === 'users_username_key') {
+        reply.code(409).send({ error: 'Username already exists' });
+      } else {
+        reply.code(500).send({ error: 'Internal Server Error' });
+      }
     } else {
       reply.code(500).send({ error: 'Internal Server Error' });
     }
@@ -41,6 +46,18 @@ export async function attachBookToUser(request: FastifyRequest<{ Params: AttachB
     await attachBookToUserInDb(userId, bookId);
     reply.code(200).send({ success: true });
   } catch (error) {
-    reply.code(500).send({ error: 'Internal Server Error' });
+    if (error instanceof DatabaseError) {
+      if (error.constraint === 'user_books_user_id_fkey') {
+        reply.code(400).send({ error: 'Invalid user ID' });
+      } else if (error.constraint === 'user_books_book_id_fkey') {
+        reply.code(400).send({ error: 'Invalid book ID' });
+      } else if (error.constraint === 'user_books_pkey') {
+        reply.code(409).send({ error: 'Book already attached to user' });
+      } else {
+        reply.code(500).send({ error: 'Internal Server Error' });
+      }
+    } else {
+      reply.code(500).send({ error: 'Internal Server Error' });
+    }
   }
 }
