@@ -27,8 +27,9 @@ export async function authenticateUser(request: FastifyRequest<{ Body: Authentic
       reply.code(401).send({ error: 'Invalid username or password' });
       return;
     }
-    const token = await reply.jwtSign({ userId: user.id } as JWTPayload);
-    reply.send({ token });
+    const id = user.id;
+    const token = await reply.jwtSign({ userId: id } as JWTPayload);
+    reply.send({ token, id });
   } catch (error) {
     reply.code(500).send({ error: 'Internal Server Error' });
   }
